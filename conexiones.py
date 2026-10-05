@@ -4,7 +4,7 @@ import getpass as gp
 
 # libreria getpass para no ver la contraseña escrita
 
-pass_temp = gp.getpass("Si desea utilizar comandos SUDO, ingrese el acceso root temporalmente, de lo contrario ingresar solo Enter.\n")
+pass_temp = gp.getpass("Si desea utilizar comandos SUDO ingrese el acceso root temporalmente, de lo contrario ingresar solo Enter.\n")
 
 class AbrirOpciones:
     def __init__(self):
@@ -17,7 +17,7 @@ class AbrirOpciones:
             opcion = input(
                 f"--| Sistema de Conexiones SSH |--"
                 f"\n[1] Conexión SSH - Mantener terminal abierta."
-                f"\n[2] Extraer valor HTOP."
+                f"\n[2] Extraer valor TOP."
                 f"\n[3] Extraer sesiónes activas y ultimos logeos."
                 f"\n[4] Revisar cambios en Usuarios y Contraseñas. [SUDO]"
                 f"\n[5] Revisar cambios en SUDO y permisos Administradores. [SUDO]"
@@ -25,6 +25,7 @@ class AbrirOpciones:
                 f"\n[7] Revisar cambios en Archivos borrados. [SUDO]"
                 f"\n[8] Revisar cambios en Permisos recientes. [SUDO]"
                 f"\n[9] Revisar cambios en Sofware instalado/gestionado. [SUDO]"
+                f"\n[10] Revisar TODOS los eventos de los últimos 10 minutos. [SUDO]"
                 f"\n[0] Salir."
                 f"\nIngresando el valor: \n"
             )
@@ -33,7 +34,7 @@ class AbrirOpciones:
                 sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}"])
                 self.controlador = False
             elif opcion == "2":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "top -b -n 1; exit"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "top -b -n 1"],
                 capture_output=True,
                 # muestra salida de comando, no en terminal
                 text=True
@@ -41,74 +42,79 @@ class AbrirOpciones:
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "3":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "w; last -n 20 -i; exit"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "w; last -n 20 -i"],
                 capture_output=True,
                 text=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
-                print(clave.stderr)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "4":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k identity -i; exit"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -k identity -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
-                print(clave.stderr)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "5":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k sudo_changes -i; exit"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -k sudo_changes -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
-                print(clave.stderr)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "6":
                 # sh -c es lo mismo que "abrir un shell y ejecutar la siguiente cadena como comando", se encierra entre ' lo que se ocupa ejecutar '
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' sh -c 'ausearch -k ssh_config -i; ausearch -k etc_changes -i; exit'"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' sh -c 'ausearch --input-logs -k ssh_config -i; ausearch --input-logs -k etc_changes -i'"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
-                print(clave.stderr)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "7":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k identity -i"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -k file_delete -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "8":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k identity -i"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -k permission_change -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "9":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k identity -i"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -k software_install -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "10":
-                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch -k identity -i"],
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "sudo -S -p '' ausearch --input-logs -ts recent -i"],
                 input=pass_temp + "\n",
                 text=True,
                 capture_output=True
                 )
                 print("\nDatos del servidor:\n")
                 print(clave.stdout)
+                print(clave.stderr.replace("<no matches>", "No hay registros.."))
             elif opcion == "0":
                 print("\nCerrado.\n")
                 self.controlador = False
