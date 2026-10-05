@@ -1,0 +1,149 @@
+## =========================================================
+## CONFIG GEN
+## =========================================================
+
+-D
+-b 8192
+-f 1
+
+
+## =========================================================
+## USERS - GROUPS & PASSWD
+## =========================================================
+
+-a always,exit -F path=/etc/passwd -F perm=wa -k identity
+-a always,exit -F path=/etc/group -F perm=wa -k identity
+-a always,exit -F path=/etc/shadow -F perm=wa -k identity
+-a always,exit -F path=/etc/gshadow -F perm=wa -k identity
+
+
+## =========================================================
+## SUDO Y ESCALADA DE PRIVIL
+## =========================================================
+
+-a always,exit -F path=/etc/sudoers -F perm=wa -k sudo_changes
+-a always,exit -F dir=/etc/sudoers.d -F perm=wa -k sudo_changes
+
+
+## =========================================================
+## CONFIG SSH
+## =========================================================
+
+-a always,exit -F path=/etc/ssh/sshd_config -F perm=wa -k ssh_config
+-a always,exit -F dir=/etc/ssh -F perm=wa -k ssh_config
+
+
+## =========================================================
+## CAMBIOS GEN EN /ETC
+## =========================================================
+
+-a always,exit -F dir=/etc -F perm=wa -k etc_changes
+
+
+## =========================================================
+## CRON Y TASK PROGR
+## =========================================================
+
+-a always,exit -F path=/etc/crontab -F perm=wa -k cron_changes
+-a always,exit -F dir=/etc/cron.d -F perm=wa -k cron_changes
+
+
+## =========================================================
+## SYSTEMD / SERVICES
+## =========================================================
+
+-a always,exit -F dir=/etc/systemd -F perm=wa -k systemd_changes
+-a always,exit -F dir=/usr/lib/systemd/system -F perm=wa -k systemd_changes
+
+
+## =========================================================
+## CONFIG NET - RED
+## =========================================================
+
+-a always,exit -F path=/etc/hosts -F perm=wa -k network_changes
+-a always,exit -F path=/etc/resolv.conf -F perm=wa -k network_changes
+
+
+## =========================================================
+## MODULOS KERNEL
+## =========================================================
+
+-a always,exit -F dir=/etc/modprobe.d -F perm=wa -k kernel_modules
+
+
+## =========================================================
+## INST / GESTION DE SOFTWARE
+## =========================================================
+
+-a always,exit -F path=/usr/bin/apt -F perm=x -k software_install
+-a always,exit -F path=/usr/bin/apt-get -F perm=x -k software_install
+-a always,exit -F path=/usr/bin/dpkg -F perm=x -k software_install
+
+
+## =========================================================
+## ARCHIVOS DE USUARIOS
+## =========================================================
+
+-a always,exit -F dir=/home -F perm=wa -k home_changes
+
+
+## =========================================================
+## ARCHIVOS DE ROOT
+## =========================================================
+
+-a always,exit -F dir=/root -F perm=wa -k root_changes
+
+
+## =========================================================
+## BORRADO Y RENOMBRADO DE ARCHIVOS
+## =========================================================
+
+-a always,exit -F arch=b64 -S unlink,unlinkat,rename,renameat,renameat2 -F auid>=1000 -F auid!=4294967295 -k file_delete
+
+
+## =========================================================
+## CAMBIOS DE PERMISOS
+## =========================================================
+
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=4294967295 -k permission_change
+
+
+## =========================================================
+## CAMBIOS DE PROPIETARIO
+## =========================================================
+
+-a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=4294967295 -k ownership_change
+
+
+## =========================================================
+## CAMBIOS DE FECHA Y HORA DEL SISTEMA
+## =========================================================
+
+-a always,exit -F arch=b64 -S adjtimex,settimeofday,clock_settime -k time_change
+
+
+## =========================================================
+## MONTAJE Y DESMONTAJE DE FILESYSTEMS
+## =========================================================
+
+-a always,exit -F arch=b64 -S mount,umount2 -F auid>=1000 -F auid!=4294967295 -k mounts
+
+
+## =========================================================
+## EJEC HERRAMIENTAS ADMIN IMP
+## =========================================================
+
+-a always,exit -F path=/usr/bin/sudo -F perm=x -k privileged_command
+-a always,exit -F path=/usr/bin/su -F perm=x -k privileged_command
+-a always,exit -F path=/usr/bin/passwd -F perm=x -k privileged_command
+
+
+## =========================================================
+## # INTENTOS FALLIDOS ARCHIVOS
+## =========================================================
+
+-a always,exit -F arch=b64 -S open,openat,openat2,creat -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access_denied
+
+-a always,exit -F arch=b64 -S open,openat,openat2,creat -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access_denied
+
+------------------------------------------------------------

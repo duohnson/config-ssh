@@ -11,6 +11,7 @@ class AbrirOpciones:
                 f"--| Sistema de Conexiones SSH |--"
                 f"\n[1] Conexión SSH - Mantener terminal abierta."
                 f"\n[2] Extraer valor HTOP."
+                f"\n[3] Extraer sesiónes activas y ultimos logeos."
                 f"\nIngresando el valor: \n"
             )
 
@@ -22,13 +23,20 @@ class AbrirOpciones:
                 capture_output=True,
                 text=True
                 )
-                print("Datos del servidor:")
+                print("\nDatos del servidor:\n")
+                print(clave.stdout)
+            elif opcion == "3":
+                clave = sp.run(["ssh", f"{dt.N_USUARIO}@{dt.N_IP}", "w; last -n 20 -i"],
+                capture_output=True,
+                text=True
+                )
+                print("\nDatos del servidor:\n")
                 print(clave.stdout)
             elif opcion == "0":
-                print("Cerrado.")
+                print("\nCerrado.\n")
                 self.controlador = False
             else:
-                print ("Opción invalida, favor usar un número apropiado.")
+                print ("\nOpción invalida, favor usar un número apropiado.\n")
 
 arrancar = AbrirOpciones()
 arrancar.opciones()
